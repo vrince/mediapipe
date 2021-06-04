@@ -32,6 +32,23 @@ cc_binary(
     ],
 )
 
+cc_binary(
+    name = "face_mesh_graph_runner",
+    deps = [
+        "//mediapipe/examples/desktop:graph_runner_main",
+        "//mediapipe/graphs/face_mesh:desktop_live_calculators",
+    ]
+)
+
+cc_binary(
+    name = "face_mesh_graph_lib",
+    deps = [
+        "//mediapipe/examples/desktop:graph_runner",
+        "//mediapipe/graphs/face_mesh:desktop_live_calculators",
+    ],
+    linkshared = True
+)
+
 # Linux only
 cc_binary(
     name = "face_mesh_gpu",

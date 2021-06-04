@@ -195,7 +195,7 @@ http_archive(
 new_local_repository(
     name = "linux_opencv",
     build_file = "@//third_party:opencv_linux.BUILD",
-    path = "/usr",
+    path = "/home/thomas/dev/airy3d/third_parties/install/Release",
 )
 
 new_local_repository(

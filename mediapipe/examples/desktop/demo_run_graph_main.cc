@@ -57,6 +57,7 @@ absl::Status RunMPPGraph() {
 
   LOG(INFO) << "Initialize the camera or load the video.";
   cv::VideoCapture capture;
+
   const bool load_video = !absl::GetFlag(FLAGS_input_video_path).empty();
   if (load_video) {
     capture.open(absl::GetFlag(FLAGS_input_video_path));
@@ -65,14 +66,21 @@ absl::Status RunMPPGraph() {
   }
   RET_CHECK(capture.isOpened());
 
+  std::cout << capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G')) << std::endl;
+  std::cout << capture.set(cv::CAP_PROP_FRAME_WIDTH, 1280) << std::endl;
+  std::cout << capture.set(cv::CAP_PROP_FRAME_HEIGHT, 720) << std::endl;
+  std::cout << capture.set(cv::CAP_PROP_FPS, 30) << std::endl;
+
+  double width = capture.get(cv::CAP_PROP_FRAME_WIDTH);
+  double height = capture.get(cv::CAP_PROP_FRAME_HEIGHT);
+
+  std::cout << width << "x" << height  << std::endl;
+
   cv::VideoWriter writer;
   const bool save_video = !absl::GetFlag(FLAGS_output_video_path).empty();
   if (!save_video) {
     cv::namedWindow(kWindowName, /*flags=WINDOW_AUTOSIZE*/ 1);
 #if (CV_MAJOR_VERSION >= 3) && (CV_MINOR_VERSION >= 2)
-    capture.set(cv::CAP_PROP_FRAME_WIDTH, 640);
-    capture.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-    capture.set(cv::CAP_PROP_FPS, 30);
 #endif
   }
 
@@ -96,6 +104,7 @@ absl::Status RunMPPGraph() {
       break;
     }
     cv::Mat camera_frame;
+
     cv::cvtColor(camera_frame_raw, camera_frame, cv::COLOR_BGR2RGB);
     if (!load_video) {
       cv::flip(camera_frame, camera_frame, /*flipcode=HORIZONTAL*/ 1);
@@ -122,6 +131,9 @@ absl::Status RunMPPGraph() {
 
     // Convert back to opencv for display or saving.
     cv::Mat output_frame_mat = mediapipe::formats::MatView(&output_frame);
+
+    //std::cout << output_frame_mat.size() << std::endl;
+
     cv::cvtColor(output_frame_mat, output_frame_mat, cv::COLOR_RGB2BGR);
     if (save_video) {
       if (!writer.isOpened()) {
